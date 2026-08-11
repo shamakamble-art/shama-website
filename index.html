@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Shama Kamble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --bg:#FFFBF3; --ink:#241F35; --muted:#6C6785; --dim:#A29DB6;
+    --card:#FFFFFF; --border:rgba(36,31,53,.10); --border2:rgba(255,107,107,.4);
+    --coral:#FF6B6B; --tangerine:#FF9F45; --amber:#FFC93C;
+    --teal:#22C7B8; --blue:#4A90FF; --violet:#8B5CF6; --pink:#FF74A8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .bg{position:fixed;inset:0;z-index:-2;background:
+      radial-gradient(70% 55% at 12% 0%, #FFE7D6 0%, transparent 55%),
+      radial-gradient(65% 55% at 100% 8%, #FFE0EC 0%, transparent 55%),
+      radial-gradient(70% 60% at 90% 100%, #D9F7F2 0%, transparent 55%),
+      radial-gradient(60% 60% at 0% 100%, #E7ECFF 0%, transparent 55%),
+      var(--bg)}
+  .blob{position:fixed;z-index:-1;border-radius:50%;filter:blur(80px);opacity:.5;pointer-events:none}
+  .blob.a{width:380px;height:380px;background:#FFB37A;top:-110px;left:-90px;animation:f1 17s ease-in-out infinite}
+  .blob.b{width:340px;height:340px;background:#7 CE7DD;background:#7CE7DD;bottom:-110px;right:-80px;animation:f2 21s ease-in-out infinite}
+  .blob.c{width:300px;height:300px;background:#B7C6FF;top:40%;left:60%;animation:f1 24s ease-in-out infinite}
+  @keyframes f1{50%{transform:translate(55px,45px)}}
+  @keyframes f2{50%{transform:translate(-45px,-35px)}}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:16px;
+    padding:13px 20px;backdrop-filter:blur(14px);background:rgba(255,251,243,.72);
+    border-bottom:1px solid var(--border)}
+  .brand{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;white-space:nowrap}
+  .brand span{background:linear-gradient(120deg,var(--coral),var(--tangerine));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .navlinks{display:flex;gap:6px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks button{background:none;border:none;color:var(--muted);font-family:'Inter';font-size:13.5px;
+    font-weight:500;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.25s}
+  .navlinks button:hover{color:var(--ink)}
+  .navlinks button.active{color:#fff;background:linear-gradient(135deg,var(--coral),var(--tangerine))}
+
+  .viewport{position:fixed;inset:0;overflow:hidden}
+  .track{display:flex;height:100dvh;transition:transform .62s cubic-bezier(.22,.61,.36,1);will-change:transform}
+  .page{flex:0 0 100vw;height:100dvh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .page::-webkit-scrollbar{width:0}
+  .inner{max-width:760px;margin:0 auto;padding:96px 24px 90px;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
+  .inner.top{justify-content:flex-start}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  .eyebrow{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:18px;
+    background:linear-gradient(120deg,var(--coral),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h1{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(44px,11vw,82px);line-height:1.02;letter-spacing:-.02em;
+     background:linear-gradient(115deg,var(--coral) 5%,var(--tangerine) 40%,var(--violet) 95%);
+     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+  .lede{font-size:clamp(17px,2.4vw,20px);color:#4A4560;max-width:48ch}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+  .chip{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:7px 15px;font-size:13px;color:#4A4560;font-weight:500;box-shadow:0 4px 14px rgba(36,31,53,.05)}
+  .hint{margin-top:34px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px}
+  .hint .arrow{animation:nudge 1.6s ease-in-out infinite}
+  @keyframes nudge{50%{transform:translateX(6px)}}
+
+  .kick{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:12px;
+    background:linear-gradient(120deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h2{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(28px,5vw,38px);letter-spacing:-.01em;margin-bottom:22px}
+  .body{font-size:16.5px;color:#54506B;max-width:60ch}
+  .body strong{color:var(--coral);font-weight:600}
+  .body + .body{margin-top:14px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:26px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:.25s;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(36,31,53,.05)}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px}
+  .card:nth-child(1)::before{background:linear-gradient(90deg,var(--coral),var(--tangerine))}
+  .card:nth-child(2)::before{background:linear-gradient(90deg,var(--violet),var(--pink))}
+  .card:nth-child(3)::before{background:linear-gradient(90deg,var(--teal),var(--blue))}
+  .card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:0 14px 34px rgba(36,31,53,.1)}
+  .card h3{font-family:'Sora';font-weight:600;font-size:18px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:24px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:0 6px 18px rgba(36,31,53,.04)}
+  .stat b{font-family:'Sora';font-weight:700;font-size:15px;color:var(--ink);display:block}
+  .stat span{font-size:12.5px;color:var(--muted)}
+
+  .tl{margin-top:10px;border-left:2px solid var(--border);padding-left:24px;position:relative}
+  .node{position:relative;padding-bottom:30px}
+  .node:last-child{padding-bottom:0}
+  .node::before{content:"";position:absolute;left:-31px;top:5px;width:12px;height:12px;border-radius:50%;
+     background:linear-gradient(135deg,var(--coral),var(--tangerine));box-shadow:0 0 0 4px rgba(255,107,107,.14)}
+  .node .co{font-family:'Sora';font-weight:600;font-size:19px}
+  .node .cm{font-size:13px;color:var(--dim);margin-bottom:8px}
+  .node .rt{font-weight:600;font-size:15.5px;color:#3B3652}
+  .node .rd{font-size:13px;color:var(--muted);margin-bottom:4px}
+  .node .rp{font-size:14px;color:var(--muted);margin-top:4px}
+  .tag{display:inline-block;font-size:11.5px;color:var(--blue);background:rgba(74,144,255,.1);border:1px solid rgba(74,144,255,.25);border-radius:999px;padding:2px 10px;margin:8px 6px 0 0}
+  .subrole{margin-top:14px}
+
+  .edu{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-top:14px;box-shadow:0 6px 18px rgba(36,31,53,.04)}
+  .edu .school{font-family:'Sora';font-weight:600;font-size:17.5px}
+  .edu .deg{font-size:14.5px;color:#54506B;margin-top:3px}
+  .edu .em{font-size:13px;color:var(--dim);margin-top:3px}
+  .edu p{font-size:14px;color:var(--muted);margin-top:10px}
+  .edu .honor{font-size:13.5px;color:var(--coral);margin-top:8px;font-weight:600}
+
+  .story{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:14px;transition:.25s;box-shadow:0 6px 18px rgba(36,31,53,.04)}
+  .story:hover{transform:translateY(-3px);border-color:var(--border2)}
+  .story .num{font-family:'Sora';font-weight:800;font-size:13px;letter-spacing:.08em;
+    background:linear-gradient(120deg,var(--tangerine),var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .story h3{font-family:'Sora';font-weight:600;font-size:19px;margin:6px 0 4px}
+  .story .meta{font-size:12.5px;color:var(--dim);margin-bottom:10px}
+  .story p{font-size:14.5px;color:var(--muted)}
+  .story .quote{margin-top:12px;padding-left:14px;border-left:3px solid var(--tangerine);font-style:italic;color:#54506B;font-size:14.5px}
+
+  .btn{display:inline-flex;align-items:center;gap:10px;margin-top:8px;background:linear-gradient(135deg,var(--coral),var(--tangerine));
+    color:#fff;text-decoration:none;font-weight:600;padding:15px 28px;border-radius:14px;font-size:16px;transition:.25s;box-shadow:0 12px 30px rgba(255,107,107,.32)}
+  .btn:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(255,107,107,.42)}
+
+  .dots{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:55}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(36,31,53,.16);cursor:pointer;transition:.3s}
+  .dot.active{background:linear-gradient(135deg,var(--coral),var(--tangerine));width:24px;border-radius:5px}
+  .pdf{position:fixed;bottom:14px;right:16px;z-index:55;background:var(--card);border:1px solid var(--border2);
+    color:var(--coral);font-family:'Inter';font-weight:600;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;box-shadow:0 6px 18px rgba(36,31,53,.08);transition:.25s}
+  .pdf:hover{background:var(--coral);color:#fff}
+
+  @media (max-width:560px){ .brand{font-size:14px} .inner{padding:88px 20px 84px} }
+
+  body.exporting{overflow:visible}
+  body.exporting .track{transform:none!important;display:block;height:auto}
+  body.exporting .page{width:100%;height:auto;overflow:visible;page-break-after:always}
+  body.exporting .inner{min-height:0;justify-content:flex-start;padding:40px 30px}
+  body.exporting .reveal{opacity:1;transform:none}
+  body.exporting nav,body.exporting .dots,body.exporting .pdf,body.exporting .hint,body.exporting .blob{display:none}
+  @media print{nav,.dots,.pdf,.hint,.blob{display:none}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+
+<nav>
+  <div class="brand">Shama<span>.</span></div>
+  <div class="navlinks">
+    <button data-i="0" class="active">Home</button>
+    <button data-i="1">About</button>
+    <button data-i="2">Journey</button>
+    <button data-i="3">Education</button>
+    <button data-i="4">Stories</button>
+    <button data-i="5">Connect</button>
+  </div>
+</nav>
+
+<div class="viewport">
+ <div class="track" id="track">
+
+  <section class="page"><div class="inner">
+    <p class="eyebrow reveal">Development Professional</p>
+    <h1 class="reveal">Shama<br>Kamble</h1>
+    <p class="lede reveal">I build and lead programs that strengthen public education — working alongside governments to make systems change real, not parallel.</p>
+    <div class="chips reveal">
+      <span class="chip">Senior Program Lead · Mantra4Change</span>
+      <span class="chip">Ex-MGNF, GoI</span>
+      <span class="chip">IIMV PGPMCI '27</span>
+      <span class="chip">IIM Bangalore</span>
+    </div>
+    <div class="hint reveal">Swipe, or use the menu &amp; arrow keys <span class="arrow">→</span></div>
+  </div></section>
+
+  <section class="page"><div class="inner">
+    <p class="kick reveal">About</p>
+    <h2 class="reveal">A little about me</h2>
+    <p class="body reveal">I work in the <strong>development space</strong>, currently as <strong>Senior Program Lead at Mantra4Change</strong> in Bengaluru. My work sits where education, public systems, and government partnerships meet — designing programs that strengthen the systems already reaching every child, rather than building new ones beside them.</p>
+    <p class="body reveal">Before this I was a <strong>Mahatma Gandhi National Fellow (MGNF)</strong> with MSDE and IIM Bangalore, and I built and ran my own coaching academy in Karwar. Outside work, I'm usually on a badminton court, in a Kathak class, or learning something new.</p>
+    <div class="grid">
+      <div class="card reveal"><h3>Badminton</h3><p>Fast rallies and the quiet focus of a good game.</p></div>
+      <div class="card reveal"><h3>Kathak</h3><p>Rhythm, expression, and the discipline of classical dance.</p></div>
+      <div class="card reveal"><h3>Always learning</h3><p>Forever curious, always picking up something new.</p></div>
+    </div>
+    <div class="stats">
+      <div class="stat reveal"><b>2021–2023</b><span>MGNF Fellow, GoI</span></div>
+      <div class="stat reveal"><b>Since 2019</b><span>Leading programs &amp; teams</span></div>
+      <div class="stat reveal"><b>In progress</b><span>MBA · IIM Visakhapatnam</span></div>
+    </div>
+  </div></section>
+
+  <section class="page"><div class="inner top">
+    <p class="kick reveal">Experience</p>
+    <h2 class="reveal">My journey so far</h2>
+    <div class="tl">
+      <div class="node reveal">
+        <div class="co">Mantra4Change</div>
+        <div class="cm">Bengaluru · Full-time · 2 yrs 10 mos</div>
+        <div class="rt">Senior Program Lead</div>
+        <div class="rd">Apr 2026 – Present · 5 mos</div>
+        <div class="subrole">
+          <div class="rt">Program Lead</div>
+          <div class="rd">Nov 2023 – Apr 2026 · 2 yrs 6 mos</div>
+        </div>
+        <span class="tag">Solution Building</span>
+      </div>
+      <div class="node reveal">
+        <div class="co">MGNF Fellowship — South Goa</div>
+        <div class="cm">MSDE &amp; IIM Bangalore · Full-time</div>
+        <div class="rt">Mahatma Gandhi National Fellow</div>
+        <div class="rd">Oct 2021 – Oct 2023 · 2 yrs 1 mo</div>
+        <span class="tag">Solution Building</span>
+      </div>
+      <div class="node reveal">
+        <div class="co">Smart Coaching Academy, Karwar</div>
+        <div class="cm">Karwar, Karnataka · Self-employed · 4 yrs 10 mos</div>
+        <div class="rt">Managing Director</div>
+        <div class="rd">Jan 2019 – Oct 2023</div>
+        <div class="rp">An academy for career enhancement, built on a clear vision of result-oriented, quality teaching for students.</div>
+        <span class="tag">Team Leadership</span><span class="tag">Digital Media</span>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="page"><div class="inner top">
+    <p class="kick reveal">Education</p>
+    <h2 class="reveal">Where I've studied</h2>
+    <div class="edu reveal">
+      <div class="school">IIM Visakhapatnam</div>
+      <div class="deg">PGPMCI — Master of Business Administration (MBA)</div>
+      <div class="em">Mar 2025 – Mar 2027</div>
+      <p>A two-year modular MBA for working professionals — blending virtual learning with an intensive on-campus immersion and a capstone project, focused on strategy, leadership, and innovation.</p>
+      <div class="honor">Director's Merit List awardee · Ranked first in Terms 2 &amp; 3 of Year 1.</div>
+    </div>
+    <div class="edu reveal">
+      <div class="school">IIM Bangalore</div>
+      <div class="deg">Public Policy and Management</div>
+      <div class="em">Oct 2021 – Oct 2023 · Grade A (3.75 / 4)</div>
+      <p>Academic rigour paired with district immersion — working with local administrations to turn classroom insight into real public-systems solutions.</p>
+    </div>
+    <div class="edu reveal">
+      <div class="school">KLE Society's P. C. Jabin Science College, Hubli</div>
+      <div class="deg">B.Sc — Microbiology</div>
+      <div class="em">2016 – 2019</div>
+    </div>
+  </div></section>
+
+  <section class="page"><div class="inner top">
+    <p class="kick reveal">Stories</p>
+    <h2 class="reveal">Moments from the work</h2>
+    <div class="story reveal">
+      <div class="num">01</div>
+      <h3>Designing for government systems</h3>
+      <div class="meta">LFE Research Symposium 2026 · "Working with the Government"</div>
+      <p>I led a session on what it really takes to design solutions inside government systems. My conviction: governments are the only actors that reach every child, so lasting change comes from strengthening what exists — not building parallel structures beside it.</p>
+    </div>
+    <div class="story reveal">
+      <div class="num">02</div>
+      <h3>Holding the stage at InvokED 5.0</h3>
+      <div class="meta">Emcee · Conversations on leadership for a billion learners</div>
+      <p>My first time hosting an event at this scale — sharing the stage with student co-emcees and grounding two days of dialogue in the voices that matter most: students. The lesson I carried away was that leadership is a responsibility, not a position.</p>
+    </div>
+    <div class="story reveal">
+      <div class="num">03</div>
+      <h3>SAMARTHA &amp; the Don Norman Design Award</h3>
+      <div class="meta">Mantra4Change — DNDA25 Organization Laureate</div>
+      <p>SAMARTHA, our school-transformation program in Kalaburagi, was central to the recognition. Rooted in co-creation and shared leadership, it helped school leaders shift from compliance to genuine ownership — proof that systemic change is built with communities, not for them.</p>
+    </div>
+    <div class="story reveal">
+      <div class="num">04</div>
+      <h3>A week that became a community</h3>
+      <div class="meta">Campus immersion · IIM Visakhapatnam</div>
+      <p>What had been names on a screen became friendships over a week of classes, simulations, and late-night badminton. I returned humbled to have made the Director's Merit List and ranked first in two terms — and reminded why I keep learning.</p>
+      <div class="quote">"Safar jaari hai, manzilein abhi aur bhi hain."</div>
+    </div>
+  </div></section>
+
+  <section class="page"><div class="inner">
+    <p class="kick reveal">Connect</p>
+    <h2 class="reveal">Let's build something</h2>
+    <p class="body reveal">Whether it's education, public systems, or a shared belief that change is built with people — I'd love to connect.</p>
+    <div class="reveal"><a class="btn" href="https://www.linkedin.com/in/shama-kamble/" target="_blank" rel="noopener">Visit my LinkedIn →</a></div>
+  </div></section>
+
+ </div>
+</div>
+
+<div class="dots" id="dots"></div>
+<button class="pdf" onclick="downloadPDF()">↓ Save as PDF</button>
+
+<script>
+  var track=document.getElementById('track');
+  var pages=[].slice.call(document.querySelectorAll('.page'));
+  var navBtns=[].slice.call(document.querySelectorAll('.navlinks button'));
+  var dotsWrap=document.getElementById('dots');
+  var idx=0;
+  pages.forEach(function(_,i){
+    var d=document.createElement('div'); d.className='dot'+(i===0?' active':'');
+    d.onclick=function(){go(i)}; dotsWrap.appendChild(d);
+  });
+  var dots=[].slice.call(document.querySelectorAll('.dot'));
+  function reveal(i){
+    var els=pages[i].querySelectorAll('.reveal');
+    els.forEach(function(el){el.classList.remove('in')});
+    requestAnimationFrame(function(){
+      els.forEach(function(el,k){ setTimeout(function(){el.classList.add('in')}, 90*k); });
+    });
+  }
+  function go(n){
+    idx=Math.max(0,Math.min(pages.length-1,n));
+    track.style.transform='translateX(-'+(idx*100)+'vw)';
+    navBtns.forEach(function(b,i){b.classList.toggle('active',i===idx)});
+    dots.forEach(function(d,i){d.classList.toggle('active',i===idx)});
+    pages[idx].scrollTop=0; reveal(idx);
+  }
+  navBtns.forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight')go(idx+1);
+    if(e.key==='ArrowLeft')go(idx-1);
+  });
+  var sx=0,sy=0,tracking=false;
+  var vp=document.querySelector('.viewport');
+  vp.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;tracking=true;},{passive:true});
+  vp.addEventListener('touchend',function(e){
+    if(!tracking)return; tracking=false;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3){ go(dx<0?idx+1:idx-1); }
+  },{passive:true});
+  function downloadPDF(){
+    var btn=document.querySelector('.pdf');
+    if(typeof html2pdf==='undefined'){window.print();return;}
+    btn.textContent='Preparing…';
+    document.body.classList.add('exporting');
+    var opt={margin:[6,6,6,6],filename:'Shama-Kamble.pdf',
+      image:{type:'jpeg',quality:.98},
+      html2canvas:{scale:2,backgroundColor:'#FFFBF3',useCORS:true},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['css','legacy']}};
+    html2pdf().set(opt).from(track).save().then(function(){
+      document.body.classList.remove('exporting');btn.textContent='↓ Save as PDF';
+    }).catch(function(){
+      document.body.classList.remove('exporting');btn.textContent='↓ Save as PDF';window.print();
+    });
+  }
+  reveal(0);
+</script>
+</body>
+</html>
